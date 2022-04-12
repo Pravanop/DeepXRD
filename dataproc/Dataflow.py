@@ -157,19 +157,3 @@ class DataFlow:
                                                             random_state=42)
 
         return (X_train, Y_train), (X_test, Y_test)
-
-
-def reshape_func(inp: np.array,
-                 channels: str = 'first') -> np.array:
-    """Utility function for adding dimension at required position for CNN or LSTM in keras
-    :parameter inp: numpy array
-               channels: first or last as preferred
-    :returns numpy array with added dimension at preferred position"""
-
-    if channels == 'first':
-        inp = inp.reshape(inp.shape[0], 1, inp.shape[1])
-
-    if channels == 'last':
-        inp = inp.reshape(inp.shape[0], inp.shape[1], 1)
-
-    return inp

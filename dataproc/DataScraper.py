@@ -1,7 +1,7 @@
 from pymatgen.ext.matproj import MPRester
 import json
 from typing import List
-import tqdm
+from tqdm import tqdm
 
 
 class dataScraper:
@@ -20,11 +20,11 @@ class dataScraper:
                  ):
 
         """
-         :parameter
-         pool: List of strings which contains the short forms of elements
-         api_key: private api key provided with materials project account
-         json_path: path of folder to store json file
-         json_name: name of json file that stores final dataset
+
+         :param pool: List of strings which contains the short forms of elements
+         :param api_key: private api key provided with materials project account
+         :param json_path: path of folder to store json file
+         :param json_name: name of json file that stores final dataset
          """
 
         self.mp_entries = None
@@ -46,10 +46,6 @@ class dataScraper:
     def entry_finder(self) -> None:
 
         """Gets all possible combinations of compounds present in repository.
-
-        :parameter
-
-
         :returns mp_entries: PyMatGen ComputedEntries of compounds in repository
         """
 
@@ -62,9 +58,9 @@ class dataScraper:
 
         """Extracts the peak list for a given source
 
-        :parameter
-            entry_id: A string which is the id of the crystals in Materials Project
-            source: A string in the form of Xrd.X (X to be replaced by Cu, Mo etc)
+
+          :param  entry_id: A string which is the id of the crystals in Materials Project
+        :param source: A string in the form of Xrd.X (X to be replaced by Cu, Mo etc)
 
         :returns Peak list of XRD pattern for given source"""
 
@@ -83,12 +79,9 @@ class dataScraper:
                             source: str) -> List[list]:
 
         """Static method for getting a (2theta, intensity) pair from the peak list
-
-        :parameter
-            xrd: peak list for xrd of a given xrd source
-            source: xrd source provided
-        :returns
-            List of corresponding 2theta and intensity lists"""
+        :param    xrd: peak list for xrd of a given xrd source
+        :param   source: xrd source provided
+        :returns List of corresponding 2theta and intensity lists"""
 
         patternList = xrd[0][source]['pattern']
 
@@ -104,10 +97,8 @@ class dataScraper:
 
         """Extracts space group for a compound. Is the target property for this project
 
-        :parameter
-            entry_id: A string which is the id of the crystals in Materials Project
-        :returns
-            space group symbol as a string
+        :parameter entry_id: A string which is the id of the crystals in Materials Project
+        :returns space group symbol as a string
         """
 
         properties = ['spacegroup']
@@ -121,10 +112,8 @@ class dataScraper:
                           entry_id: str) -> List[float]:
 
         """Extracts the lattice parameters for a given crystal
-        :parameter
-            entry_id: A string which is the id of the crystals in Materials Project
-        :returns
-            list of 6 lattice parameters as float
+        :parameter entry_id: A string which is the id of the crystals in Materials Project
+        :returns list of 6 lattice parameters as float
             """
         properties = ['initial_structure']
 
@@ -139,11 +128,11 @@ class dataScraper:
     def targets_saver(self,
                       entry_id: str) -> dict:
         """Formats the lattice and space group as a dictionary for targets
-        :parameter
-            entry_id: A string which is the id of the crystals in Materials Project
+        :parameter entry_id: A string which is the id of the crystals in Materials Project
         :returns dictionary with space group and lattice parameters"""
         return {'lattice': self.lattice_extractor(entry_id), 'spacegroup': self.spacegroup_extractor(entry_id)}
 
+    # noinspection PyBroadException
     @staticmethod
     def xrd_processor(peak_list: list) -> List[float]:
 
@@ -186,7 +175,7 @@ class dataScraper:
 
          """
 
-        for element, index in tqdm(enumerate(self.mp_entries)):
+        for index, element in tqdm(enumerate(self.mp_entries)):
 
             xrd_dict = {}
 

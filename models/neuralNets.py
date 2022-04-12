@@ -1,12 +1,12 @@
-from keras.layers import Conv1D, MaxPool1D, Dense, InputLayer, GlobalAveragePooling1D, Flatten, Dropout,\
-    BatchNormalization, Input
-from keras.models import Sequential, Model
+from keras.layers import Conv1D, MaxPool1D, Dense, InputLayer, GlobalAveragePooling1D, Flatten, Dropout, \
+    BatchNormalization, LSTM
+from keras.models import Sequential
 import keras
 
 
 class neuralNets:
     """
-    Definition of deepXRD architecture. Inspired by VGGNet but with batch normalization layers
+     Definition of deepXRD architecture. Inspired by VGGNet but with batch normalization layers
      and progressively smaller filter sizes and stride lengths.
 
      Definition of aCNN architecture. Used directly from Oviedo et al.
@@ -19,10 +19,10 @@ class neuralNets:
                  kernel_list=None,
                  stride_list=None,
                  pool_pad: str = 'same',
-                 input_shape: int = 1800, ) -> None:
+                 input_shape: int = 1800,
+                 model_type: str = 'DeepXRD') -> None:
 
         """
-
         :param kernel_list: list of kernel sizes for progressively deeper layers
         :param stride_list: list of stride lengths for progressively deeper layers
         :param pool_pad: type of padding for max pooling layers
@@ -39,9 +39,16 @@ class neuralNets:
         self.stride_list = stride_list
         self.pool_pad = pool_pad
 
-        self.deep_xrd = self.model()
+        if model_type is 'DeepXRD':
+            self.model = self.deepxrd()
 
-    def deepXrd(self) -> keras.Sequential:
+        if model_type is 'aCNN':
+            self.model = self.acnn()
+
+        if model_type is 'seqXRD':
+            self.model = self.seqxrd()
+
+    def deepxrd(self) -> keras.Sequential:
 
         """Definition of deepXRD architecture
         :returns Keras Sequential model"""
@@ -52,12 +59,12 @@ class neuralNets:
 
         model.add(Conv1D(16, self.kernel_list[0], padding='same', activation='relu'))
         model.add(Conv1D(16, self.kernel_list[1], strides=self.stride_list[0], padding='same', activation='relu'))
-        model.add(Dropout(0.2))  # TODO change to batch normalization
+        model.add(BatchNormalization(0.2))  # TODO change to batch normalization
         model.add(MaxPool1D(2, padding=self.pool_pad))
 
         model.add(Conv1D(32, self.kernel_list[2], padding='same', activation='relu'))
         model.add(Conv1D(32, self.kernel_list[2], strides=self.stride_list[1], padding='same', activation='relu'))
-        model.add(Dropout(0.2))
+        model.add(BatchNormalization(0.2))
         model.add(MaxPool1D(2, padding=self.pool_pad))
 
         model.add(Conv1D(64, self.kernel_list[3], padding='same', activation='relu'))
@@ -78,11 +85,10 @@ class neuralNets:
 
         return model
 
-    def a_cnn(self) -> keras.Sequential:
+    def acnn(self) -> keras.Sequential:
 
         """Immutable architecture directly taken from Oviedo et al.
         :returns Keras sequential object"""
-
 
         model = Sequential()
 
@@ -96,7 +102,7 @@ class neuralNets:
 
         return model
 
-    def seqXRD(self) -> keras.Sequential:
+    def seqxrd(self) -> keras.Sequential:
 
         """SeqXRD architecture
         :returns Keras sequential object"""
@@ -109,5 +115,3 @@ class neuralNets:
         model.add(Dense(units=5, activation='softmax'))
 
         return model
-
-
